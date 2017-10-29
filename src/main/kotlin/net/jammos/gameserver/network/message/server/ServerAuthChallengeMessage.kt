@@ -5,7 +5,7 @@ import net.jammos.utils.checkArgument
 import net.jammos.utils.extensions.write
 import java.io.DataOutput
 
-data class ServerAuthChallengeMessage(val seed: ByteArray): ServerMessage(AUTH_CHALLENGE) {
+data class ServerAuthChallengeMessage(private val seed: ByteArray): ServerMessage(AUTH_CHALLENGE) {
     override val size = seed.size
 
     init {

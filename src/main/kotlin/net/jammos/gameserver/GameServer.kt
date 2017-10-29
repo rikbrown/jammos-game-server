@@ -1,5 +1,6 @@
 package net.jammos.gameserver
 
+import com.lambdaworks.redis.RedisClient
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelOption
@@ -9,16 +10,28 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.timeout.ReadTimeoutHandler
-import net.jammos.gameserver.network.GameServerHandler
+import net.jammos.gameserver.auth.SessionAuthValidator
+import net.jammos.gameserver.network.handler.AuthSessionHandler
+import net.jammos.gameserver.network.handler.CharacterListHandler
+import net.jammos.gameserver.network.handler.PingHandler
 import net.jammos.gameserver.network.message.coding.ClientMessageDecoder
 import net.jammos.gameserver.network.message.coding.ServerMessageEncoder
+import net.jammos.utils.auth.crypto.CryptoManager
+import net.jammos.utils.auth.dao.RedisAuthDao
 import java.net.InetAddress
 
 private const val PORT = 1234
-private const val TIMEOUT = 10
+private const val TIMEOUT = 100
+
+
 
 class GameServer {
     companion object {
+        private val redis = RedisClient.create("redis://localhost")
+        private val cryptoManager = CryptoManager()
+        private val authDao = RedisAuthDao(redis, cryptoManager)
+        private val authValidator = SessionAuthValidator(authDao, cryptoManager)
+
         @JvmStatic fun main(args: Array<String>) {
 
             // Configure the server.
@@ -43,7 +56,17 @@ class GameServer {
                                         ClientMessageDecoder(),
                                         ServerMessageEncoder(),
                                         ReadTimeoutHandler(TIMEOUT),
-                                        GameServerHandler())
+
+                                        // ** Unauthenticated handlers **
+                                        // Auth session
+                                        AuthSessionHandler(authValidator),
+
+                                        // ** From now on, require authentication **
+
+                                        // ** Authenticated handlers **
+                                        // Always respond to pings
+                                        PingHandler,
+                                        CharacterListHandler())
                             }
                         })
 
