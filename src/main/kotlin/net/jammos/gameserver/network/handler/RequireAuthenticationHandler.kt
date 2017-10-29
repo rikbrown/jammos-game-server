@@ -12,6 +12,8 @@ class RequireAuthenticationHandler: JammosHandler() {
             logger.warn { "Client is not authenticated but authentication required for: $msg" }
             return closeSession(ctx)
         }
+
+        pass(ctx, msg)
     }
 
 }

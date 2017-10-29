@@ -15,6 +15,7 @@ import net.jammos.gameserver.characters.CharacterListManager
 import net.jammos.gameserver.network.handler.AuthSessionHandler
 import net.jammos.gameserver.network.handler.CharacterListHandler
 import net.jammos.gameserver.network.handler.PingHandler
+import net.jammos.gameserver.network.handler.RequireAuthenticationHandler
 import net.jammos.gameserver.network.message.coding.ClientMessageDecoder
 import net.jammos.gameserver.network.message.coding.ServerMessageEncoder
 import net.jammos.utils.auth.crypto.CryptoManager
@@ -64,6 +65,7 @@ class GameServer {
                                         AuthSessionHandler(authValidator),
 
                                         // ** From now on, require authentication **
+                                        RequireAuthenticationHandler(),
 
                                         // ** Authenticated handlers **
                                         // Always respond to pings
