@@ -20,12 +20,37 @@ data class GameCharacter(
         val y: Float,
         val z: Float,
         val guildId: Int, // uint32
-        val flags: Int, // uint32 - TODO
+        val flags: Flags, // uint32
         val isFirstLogin: Boolean,
         val petId: Int, // uint32
         val petLevel: Int, // uint32,
         val petFamily: Int // uint32
-)
+) {
+    data class Flags(
+            val isHelmHidden: Boolean = false,
+            val isCloakHidden: Boolean = false,
+            val isGhost: Boolean = false,
+            val mustRenameAtLogin: Boolean = false,
+            val isLockedForTransfer: Boolean = false,
+            val isLockedByBilling: Boolean = false,
+            val isDeclined: Boolean = false) {
+
+        fun toInt(): Int {
+            var flags = 0
+            if (isHelmHidden) flags = flags or 0x00000400
+            if (isCloakHidden) flags = flags or 0x00000800
+            if (isGhost) flags = flags or 0x00002000
+            if (mustRenameAtLogin) flags = flags or 0x00004000
+            if (isLockedForTransfer) flags = flags or 0x00000004
+            if (isLockedByBilling) flags = flags or 0x01000000
+            if (isDeclined) flags = flags or 0x02000000
+            return flags
+        }
+
+    }
+}
+
+
 
 enum class Race(override val value: Int): WriteableByte {
     Orc(2)

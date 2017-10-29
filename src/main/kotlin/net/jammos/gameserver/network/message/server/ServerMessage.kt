@@ -15,7 +15,7 @@ abstract class ServerMessage(val command: ServerCommand) {
 
     fun write(output: DataOutput, crypto: MessageCrypto) {
         // Payload = 4b + {size}b
-        // header + dataw
+        // header + data
         Header(size, command).write(output, crypto)
         writeData(output)
     }

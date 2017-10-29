@@ -11,8 +11,8 @@ import java.io.OutputStream
 data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMessage(CHAR_ENUM) {
     companion object: KLogging()
 
-    // structure: 1b [char count (UInt8)]
-    override val size = 1 + 159 + "Rikalorgh".length
+    // structure: 1b [char count (UInt8)] + ...
+    override val size = 1 + characters.sumBy { 159 + it.name.length }
 
     override fun writeData(output: DataOutput) {
         val leOutput = LittleEndianDataOutputStream(output as OutputStream) // FIXME: rethink all this
@@ -37,17 +37,19 @@ data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMess
             leOutput.writeFloat(character.y)
             leOutput.writeFloat(character.z)
             leOutput.writeInt(character.guildId)
-            leOutput.writeInt(character.flags)
+            leOutput.writeInt(character.flags.toInt())
             leOutput.writeBoolean(character.isFirstLogin)
             leOutput.writeInt(character.petId)
             leOutput.writeInt(character.petLevel)
             leOutput.writeInt(character.petFamily)
 
-            for (i in 0..19) {
+            // Equipment slots
+            for (i in 1..19) {
                 leOutput.writeInt(0)
                 leOutput.writeByte(0)
             }
 
+            // First bag
             leOutput.writeInt(0)
             leOutput.writeByte(0)
         }
