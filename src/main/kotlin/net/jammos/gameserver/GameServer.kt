@@ -11,6 +11,7 @@ import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.timeout.ReadTimeoutHandler
 import net.jammos.gameserver.auth.SessionAuthValidator
+import net.jammos.gameserver.characters.CharacterListManager
 import net.jammos.gameserver.network.handler.AuthSessionHandler
 import net.jammos.gameserver.network.handler.CharacterListHandler
 import net.jammos.gameserver.network.handler.PingHandler
@@ -31,6 +32,7 @@ class GameServer {
         private val cryptoManager = CryptoManager()
         private val authDao = RedisAuthDao(redis, cryptoManager)
         private val authValidator = SessionAuthValidator(authDao, cryptoManager)
+        private val characterListManager = CharacterListManager()
 
         @JvmStatic fun main(args: Array<String>) {
 
@@ -66,7 +68,7 @@ class GameServer {
                                         // ** Authenticated handlers **
                                         // Always respond to pings
                                         PingHandler,
-                                        CharacterListHandler())
+                                        CharacterListHandler(characterListManager))
                             }
                         })
 
