@@ -1,9 +1,12 @@
 package net.jammos.gameserver.characters
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonCreator.Mode.DELEGATING
+import com.fasterxml.jackson.annotation.JsonValue
 import net.jammos.utils.types.WriteableByte
 
 data class GameCharacter(
-        val guid: Long,
+        val id: CharacterId,
         val name: String, // string + 1 zero byte
         val race: Race, // byte
         val characterClass: CharacterClass, // byte
@@ -21,36 +24,38 @@ data class GameCharacter(
         val z: Float,
         val guildId: Int, // uint32
         val flags: Flags, // uint32
-        val isFirstLogin: Boolean,
+        val firstLogin: Boolean,
         val petId: Int, // uint32
         val petLevel: Int, // uint32,
         val petFamily: Int // uint32
 ) {
     data class Flags(
-            val isHelmHidden: Boolean = false,
-            val isCloakHidden: Boolean = false,
-            val isGhost: Boolean = false,
+            val helmHidden: Boolean = false,
+            val cloakHidden: Boolean = false,
+            val ghost: Boolean = false,
             val mustRenameAtLogin: Boolean = false,
-            val isLockedForTransfer: Boolean = false,
-            val isLockedByBilling: Boolean = false,
-            val isDeclined: Boolean = false) {
+            val lockedForTransfer: Boolean = false,
+            val lockedByBilling: Boolean = false,
+            val declined: Boolean = false) {
 
         fun toInt(): Int {
             var flags = 0
-            if (isHelmHidden) flags = flags or 0x00000400
-            if (isCloakHidden) flags = flags or 0x00000800
-            if (isGhost) flags = flags or 0x00002000
+            if (helmHidden) flags = flags or 0x00000400
+            if (cloakHidden) flags = flags or 0x00000800
+            if (ghost) flags = flags or 0x00002000
             if (mustRenameAtLogin) flags = flags or 0x00004000
-            if (isLockedForTransfer) flags = flags or 0x00000004
-            if (isLockedByBilling) flags = flags or 0x01000000
-            if (isDeclined) flags = flags or 0x02000000
+            if (lockedForTransfer) flags = flags or 0x00000004
+            if (lockedByBilling) flags = flags or 0x01000000
+            if (declined) flags = flags or 0x02000000
             return flags
         }
 
     }
 }
 
-
+data class CharacterId @JsonCreator(mode = DELEGATING) constructor(@JsonValue val characterId: Long) {
+    override fun toString() = characterId.toString()
+}
 
 enum class Race(override val value: Int): WriteableByte {
     Orc(2)

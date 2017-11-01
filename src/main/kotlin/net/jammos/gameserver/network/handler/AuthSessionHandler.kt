@@ -7,6 +7,7 @@ import net.jammos.gameserver.auth.SessionValidationFailure
 import net.jammos.gameserver.auth.SuspendedException
 import net.jammos.gameserver.auth.UnknownUserException
 import net.jammos.gameserver.network.JammosAttributes.CRYPTO_ATTRIBUTE
+import net.jammos.gameserver.network.JammosAttributes.USERID_ATTRIBUTE
 import net.jammos.gameserver.network.JammosAttributes.USERNAME_ATTRIBUTE
 import net.jammos.gameserver.network.ResponseCode.*
 import net.jammos.gameserver.network.message.client.ClientAuthSessionMessage
@@ -42,7 +43,7 @@ class AuthSessionHandler(private val authValidator: SessionAuthValidator): Jammo
         if (msg !is ClientAuthSessionMessage) return pass(ctx, msg)
 
         // Attempt to validate session and retrieve session key
-        val sessionKey = try {
+        val (userId, sessionKey) = try {
             authValidator.validateSession(msg.accountName, seed, msg.clientSeed, msg.digest)
 
         } catch (e: UnknownUserException) {
@@ -63,7 +64,9 @@ class AuthSessionHandler(private val authValidator: SessionAuthValidator): Jammo
         // Put it into the request context for this channel so encoder/decoder can use it
         ctx.channel().attr(CRYPTO_ATTRIBUTE).set(DefaultMessageCrypto(sessionKey))
 
-        // Also we're authenticated, so save the username
+        // Also we're authenticated, so save the user ID and username
+        // TODO: do we need to save the username actually, rather than just look it up if needed?
+        ctx.channel().attr(USERID_ATTRIBUTE).set(userId)
         ctx.channel().attr(USERNAME_ATTRIBUTE).set(msg.accountName)
 
         // Respond with an OK!

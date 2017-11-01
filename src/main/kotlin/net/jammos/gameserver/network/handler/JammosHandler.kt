@@ -3,6 +3,7 @@ package net.jammos.gameserver.network.handler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import mu.KLogging
+import net.jammos.gameserver.network.JammosAttributes.USERID_ATTRIBUTE
 import net.jammos.gameserver.network.JammosAttributes.USERNAME_ATTRIBUTE
 
 abstract class JammosHandler: ChannelInboundHandlerAdapter() {
@@ -47,4 +48,5 @@ abstract class JammosHandler: ChannelInboundHandlerAdapter() {
 
 abstract class AuthenticatedJammosHandler: JammosHandler() {
     fun username(ctx: ChannelHandlerContext) = ctx.channel().attr(USERNAME_ATTRIBUTE).get()
+    fun userId(ctx: ChannelHandlerContext) = ctx.channel().attr(USERID_ATTRIBUTE).get()
 }

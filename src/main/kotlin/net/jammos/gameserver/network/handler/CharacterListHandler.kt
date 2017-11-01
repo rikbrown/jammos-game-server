@@ -10,7 +10,7 @@ class CharacterListHandler(private val characterListManager: CharacterListManage
         if (msg !is ClientCharEnumMessage) return pass(ctx, msg)
 
         // Reply with empty character list
-        respond(ctx, ServerCharEnumMessage(characters = characterListManager.getCharacters(username(ctx))))
+        respond(ctx, ServerCharEnumMessage(characters = characterListManager.getCharacters(userId(ctx))))
     }
 
 }

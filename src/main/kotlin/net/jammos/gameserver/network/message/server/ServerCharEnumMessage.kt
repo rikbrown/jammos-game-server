@@ -20,7 +20,7 @@ data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMess
         leOutput.writeByte(characters.size) // character count
 
         characters.forEach { character ->
-            leOutput.writeLong(character.guid)
+            leOutput.writeLong(character.id.characterId)
             leOutput.writeCharsWithTerminator(character.name)
             character.race.write(leOutput)
             character.characterClass.write(leOutput)
@@ -38,7 +38,7 @@ data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMess
             leOutput.writeFloat(character.z)
             leOutput.writeInt(character.guildId)
             leOutput.writeInt(character.flags.toInt())
-            leOutput.writeBoolean(character.isFirstLogin)
+            leOutput.writeBoolean(character.firstLogin)
             leOutput.writeInt(character.petId)
             leOutput.writeInt(character.petLevel)
             leOutput.writeInt(character.petFamily)
