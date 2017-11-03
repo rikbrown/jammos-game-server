@@ -15,10 +15,11 @@ import net.jammos.gameserver.characters.*
 import net.jammos.gameserver.network.handler.*
 import net.jammos.gameserver.network.message.coding.ClientMessageDecoder
 import net.jammos.gameserver.network.message.coding.ServerMessageEncoder
-import net.jammos.utils.auth.Username.Username.username
+import net.jammos.utils.auth.Username
 import net.jammos.utils.auth.crypto.CryptoManager
 import net.jammos.utils.auth.dao.RedisAuthDao
 import java.net.InetAddress
+import java.time.Instant
 
 private const val PORT = 1234
 private const val TIMEOUT = 100
@@ -35,59 +36,69 @@ class GameServer {
         private val characterListManager = CharacterListManager(characterDao)
 
         init {
-            val rikUserId = authDao.getUserAuth(username("rik"))!!.userId
+            val rikUser = authDao.getUserAuth(Username.username("rik")) ?: authDao.createUser(Username.username("rik"), "1234")
+            val bannedUser = authDao.getUserAuth(Username.username("banned")) ?: authDao.createUser(Username.username("banned"), "banned")
+            val suspendedUser = authDao.getUserAuth(Username.username("suspended")) ?: authDao.createUser(Username.username("suspended"), "suspended")
+
+            authDao.suspendUser(
+                    userId = bannedUser.userId,
+                    start = Instant.now(),
+                    end = null)
+            authDao.suspendUser(
+                    userId = suspendedUser.userId,
+                    start = Instant.now(),
+                    end = Instant.now())
 
             characterDao.createCharacter(GameCharacter(
-                userId = rikUserId,
-                id = CharacterId(1),
-                name = "Rikalorgh",
-                race = Race.Orc,
-                characterClass = CharacterClass.Warrior,
-                gender = Gender.Male,
-                skin = 0,
-                face = 0,
-                hairStyle = 0,
-                hairColour = 0,
-                facialHair = 0,
-                level = 60,
-                zone = 0,
-                map = 0,
-                x = 0F,
-                y = 0F,
-                z = 0F,
-                guildId = 0,
-                flags = GameCharacter.Flags(
-                        ghost = true
-                ),
-                firstLogin = false,
-                petId = 0,
-                petLevel = 0,
-                petFamily = 0))
-
+                    userId = rikUser.userId,
+                    id = CharacterId(1),
+                    name = "Rikalorgh",
+                    race = Race.Orc,
+                    characterClass = CharacterClass.Warrior,
+                    gender = Gender.Male,
+                    skin = 0,
+                    face = 0,
+                    hairStyle = 0,
+                    hairColour = 0,
+                    facialHair = 0,
+                    level = 60,
+                    zone = 0,
+                    map = 0,
+                    x = 0F,
+                    y = 0F,
+                    z = 0F,
+                    guildId = 0,
+                    flags = GameCharacter.Flags(
+                            ghost = true
+                    ),
+                    firstLogin = false,
+                    petId = 0,
+                    petLevel = 0,
+                    petFamily = 0))
             characterDao.createCharacter(GameCharacter(
-                userId = rikUserId,
-                id = CharacterId(2),
-                name = "Mazornus",
-                race = Race.Orc,
-                characterClass = CharacterClass.Warrior,
-                gender = Gender.Male,
-                skin = 0,
-                face = 0,
-                hairStyle = 0,
-                hairColour = 0,
-                facialHair = 0,
-                level = 60,
-                zone = 0,
-                map = 0,
-                x = 0F,
-                y = 0F,
-                z = 0F,
-                guildId = 0,
-                flags = GameCharacter.Flags(),
-                firstLogin = false,
-                petId = 0,
-                petLevel = 0,
-                petFamily = 0))
+                    userId = rikUser.userId,
+                    id = CharacterId(2),
+                    name = "Mazornus",
+                    race = Race.Orc,
+                    characterClass = CharacterClass.Warrior,
+                    gender = Gender.Male,
+                    skin = 0,
+                    face = 0,
+                    hairStyle = 0,
+                    hairColour = 0,
+                    facialHair = 0,
+                    level = 60,
+                    zone = 0,
+                    map = 0,
+                    x = 0F,
+                    y = 0F,
+                    z = 0F,
+                    guildId = 0,
+                    flags = GameCharacter.Flags(),
+                    firstLogin = false,
+                    petId = 0,
+                    petLevel = 0,
+                    petFamily = 0))
         }
 
         @JvmStatic fun main(args: Array<String>) {
