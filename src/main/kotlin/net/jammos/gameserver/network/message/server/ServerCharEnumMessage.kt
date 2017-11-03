@@ -4,7 +4,8 @@ import com.google.common.io.LittleEndianDataOutputStream
 import mu.KLogging
 import net.jammos.gameserver.characters.GameCharacter
 import net.jammos.gameserver.network.ServerCommand.CHAR_ENUM
-import net.jammos.utils.extensions.writeCharsWithTerminator
+import net.jammos.utils.extensions.writeByte
+import net.jammos.utils.extensions.writeCharsTerminated
 import java.io.DataOutput
 import java.io.OutputStream
 
@@ -15,43 +16,44 @@ data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMess
     override val size = 1 + characters.sumBy { 159 + it.name.length }
 
     override fun writeData(output: DataOutput) {
-        val leOutput = LittleEndianDataOutputStream(output as OutputStream) // FIXME: rethink all this
+        with (LittleEndianDataOutputStream(output as OutputStream)) {
+            // FIXME: rethink all this
+            writeByte(characters.size) // character count
 
-        leOutput.writeByte(characters.size) // character count
+            characters.forEach { character ->
+                writeLong(character.id.characterId)
+                writeCharsTerminated(character.name)
+                writeByte(character.race)
+                writeByte(character.characterClass)
+                writeByte(character.gender)
+                write(character.skin)
+                write(character.face)
+                write(character.hairStyle)
+                write(character.hairColour)
+                write(character.facialHair)
+                writeByte(character.level)
+                writeInt(character.zone)
+                writeInt(character.map)
+                writeFloat(character.x)
+                writeFloat(character.y)
+                writeFloat(character.z)
+                writeInt(character.guildId)
+                writeInt(character.flags.toInt())
+                writeBoolean(character.firstLogin)
+                writeInt(character.petId)
+                writeInt(character.petLevel)
+                writeInt(character.petFamily)
 
-        characters.forEach { character ->
-            leOutput.writeLong(character.id.characterId)
-            leOutput.writeCharsWithTerminator(character.name)
-            character.race.write(leOutput)
-            character.characterClass.write(leOutput)
-            character.gender.write(leOutput)
-            character.skin.write(leOutput)
-            character.face.write(leOutput)
-            character.hairStyle.write(leOutput)
-            character.hairColour.write(leOutput)
-            character.facialHair.write(leOutput)
-            leOutput.writeByte(character.level)
-            leOutput.writeInt(character.zone)
-            leOutput.writeInt(character.map)
-            leOutput.writeFloat(character.x)
-            leOutput.writeFloat(character.y)
-            leOutput.writeFloat(character.z)
-            leOutput.writeInt(character.guildId)
-            leOutput.writeInt(character.flags.toInt())
-            leOutput.writeBoolean(character.firstLogin)
-            leOutput.writeInt(character.petId)
-            leOutput.writeInt(character.petLevel)
-            leOutput.writeInt(character.petFamily)
+                // Equipment slots
+                for (i in 1..19) {
+                    writeInt(0)
+                    writeByte(0)
+                }
 
-            // Equipment slots
-            for (i in 1..19) {
-                leOutput.writeInt(0)
-                leOutput.writeByte(0)
+                // First bag
+                writeInt(0)
+                writeByte(0)
             }
-
-            // First bag
-            leOutput.writeInt(0)
-            leOutput.writeByte(0)
         }
     }
 

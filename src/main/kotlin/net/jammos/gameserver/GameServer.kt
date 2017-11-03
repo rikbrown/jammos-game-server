@@ -12,10 +12,7 @@ import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.timeout.ReadTimeoutHandler
 import net.jammos.gameserver.auth.SessionAuthValidator
 import net.jammos.gameserver.characters.*
-import net.jammos.gameserver.network.handler.AuthSessionHandler
-import net.jammos.gameserver.network.handler.CharacterListHandler
-import net.jammos.gameserver.network.handler.PingHandler
-import net.jammos.gameserver.network.handler.RequireAuthenticationHandler
+import net.jammos.gameserver.network.handler.*
 import net.jammos.gameserver.network.message.coding.ClientMessageDecoder
 import net.jammos.gameserver.network.message.coding.ServerMessageEncoder
 import net.jammos.utils.auth.Username.Username.username
@@ -40,17 +37,18 @@ class GameServer {
         init {
             val rikUserId = authDao.getUserAuth(username("rik"))!!.userId
 
-            characterDao.createCharacter(rikUserId, GameCharacter(
+            characterDao.createCharacter(GameCharacter(
+                userId = rikUserId,
                 id = CharacterId(1),
                 name = "Rikalorgh",
                 race = Race.Orc,
                 characterClass = CharacterClass.Warrior,
                 gender = Gender.Male,
-                skin = Skin.Dunno,
-                face = Face.Dunno,
-                hairStyle = HairStyle.Dunno,
-                hairColour = HairColour.Dunno,
-                facialHair = FacialHair.Dunno,
+                skin = 0,
+                face = 0,
+                hairStyle = 0,
+                hairColour = 0,
+                facialHair = 0,
                 level = 60,
                 zone = 0,
                 map = 0,
@@ -66,17 +64,18 @@ class GameServer {
                 petLevel = 0,
                 petFamily = 0))
 
-            characterDao.createCharacter(rikUserId, GameCharacter(
+            characterDao.createCharacter(GameCharacter(
+                userId = rikUserId,
                 id = CharacterId(2),
                 name = "Mazornus",
                 race = Race.Orc,
                 characterClass = CharacterClass.Warrior,
                 gender = Gender.Male,
-                skin = Skin.Dunno,
-                face = Face.Dunno,
-                hairStyle = HairStyle.Dunno,
-                hairColour = HairColour.Dunno,
-                facialHair = FacialHair.Dunno,
+                skin = 0,
+                face = 0,
+                hairStyle = 0,
+                hairColour = 0,
+                facialHair = 0,
                 level = 60,
                 zone = 0,
                 map = 0,
@@ -126,7 +125,9 @@ class GameServer {
                                         // ** Authenticated handlers **
                                         // Always respond to pings
                                         PingHandler,
-                                        CharacterListHandler(characterListManager))
+                                        CharacterListHandler(characterListManager),
+                                        CharacterCreateHandler(characterListManager),
+                                        CharacterDeleteHandler(characterListManager))
                             }
                         })
 

@@ -1,5 +1,6 @@
 package net.jammos.gameserver.network.message.client
 
+import com.google.common.collect.Maps.immutableEnumMap
 import com.google.common.io.ByteStreams
 import mu.KLogging
 import net.jammos.gameserver.network.ClientCommand
@@ -11,18 +12,20 @@ import java.io.DataInput
 
 interface ClientMessage {
     companion object: KLogging() {
-        private val lookup = mapOf(
+        // TODO: use reflection and annotations to discover these?
+        private val lookup = immutableEnumMap(mapOf(
                 AUTH_SESSION to ClientAuthSessionMessage.Companion,
                 ClientCommand.PING to ClientPingMessage,
-                ClientCommand.CHAR_ENUM to ClientCharEnumMessage)
+                ClientCommand.CHAR_ENUM to ClientCharEnumMessage,
+                ClientCommand.CHAR_CREATE to ClientCharCreateMessage.Companion,
+                ClientCommand.CHAR_DELETE to ClientCharDeleteMessage.Companion))
 
         fun read(input: DataInput, crypto: MessageCrypto): ClientMessage {
             // Read header
             val header = Header.read(input, crypto)
 
             // Lookup handler
-            val handler = lookup[header.command]
-                    ?: throw UnsupportedCommandException(header.command)
+            val handler = lookup[header.command] ?: throw UnsupportedCommandException(header.command)
 
             // Delegate
             logger.debug { "Delegating to $handler" }
