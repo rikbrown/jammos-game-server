@@ -1,7 +1,7 @@
 package net.jammos.gameserver.network.message.client
 
-import java.io.DataInput
+import io.netty.buffer.ByteBuf
 
 object ClientCharEnumMessage: ClientMessage, ClientMessage.Reader<ClientCharEnumMessage> {
-    override fun readBody(input: DataInput) = ClientCharEnumMessage
+    override fun readBody(input: ByteBuf) = ClientCharEnumMessage
 }

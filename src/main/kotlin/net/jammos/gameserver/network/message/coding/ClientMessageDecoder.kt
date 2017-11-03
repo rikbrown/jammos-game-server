@@ -8,7 +8,6 @@ import net.jammos.gameserver.network.JammosAttributes.CRYPTO_ATTRIBUTE
 import net.jammos.gameserver.network.message.client.ClientMessage
 import net.jammos.gameserver.network.message.crypto.MessageCrypto
 import net.jammos.gameserver.network.message.crypto.NullMessageCrypto
-import net.jammos.utils.extensions.asDataInput
 
 class ClientMessageDecoder: ByteToMessageDecoder() {
     companion object : KLogging()
@@ -18,7 +17,7 @@ class ClientMessageDecoder: ByteToMessageDecoder() {
             val crypto: MessageCrypto = ctx.channel().attr(CRYPTO_ATTRIBUTE).get()
                     ?: NullMessageCrypto
 
-            val message = ClientMessage.read(buf.asDataInput(), crypto)
+            val message = ClientMessage.read(buf, crypto)
             out.add(message)
 
             logger.debug { "Read message: $message" }

@@ -15,11 +15,11 @@ data class GameCharacter(
         val race: Race, // byte
         val characterClass: CharacterClass, // byte
         val gender: Gender, // byte
-        val skin: Int, // byte
-        val face: Int, // byte
-        val hairStyle: Int, // byte
-        val hairColour: Int, // byte
-        val facialHair: Int, // byte
+        val skin: Short, // byte
+        val face: Short, // byte
+        val hairStyle: Short, // byte
+        val hairColour: Short, // byte
+        val facialHair: Short, // byte
         val level: Int = 1, // uint8
         val zone: Int, // uint32
         val map: Int, // uint32

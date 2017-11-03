@@ -1,16 +1,16 @@
 package net.jammos.gameserver.network.message.server
 
+import io.netty.buffer.ByteBuf
 import net.jammos.gameserver.network.ServerCommand.CHAR_CREATE_RESULT
 import net.jammos.utils.extensions.writeByte
 import net.jammos.utils.types.WriteableByte
-import java.io.DataOutput
 
 data class ServerCharCreateResultMessage(
         val status: CharacterCreateStatus): ServerMessage(CHAR_CREATE_RESULT) {
 
     override val size = 1 // 1 byte status
 
-    override fun writeData(output: DataOutput) {
+    override fun writeData(output: ByteBuf) {
         output.writeByte(status)
     }
 

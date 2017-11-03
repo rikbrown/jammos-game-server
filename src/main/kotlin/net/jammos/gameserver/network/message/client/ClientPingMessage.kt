@@ -1,21 +1,20 @@
 package net.jammos.gameserver.network.message.client
 
-import net.jammos.utils.extensions.readUnsignedIntLe
+import io.netty.buffer.ByteBuf
 import net.jammos.utils.field
-import java.io.DataInput
 
 data class ClientPingMessage(
-        val ping: Int,
-        val latency: Int
+        val ping: Long,
+        val latency: Long
 ): ClientMessage {
 
     companion object: ClientMessage.Reader<ClientPingMessage> {
-        override fun readBody(input: DataInput): ClientPingMessage {
+        override fun readBody(input: ByteBuf): ClientPingMessage {
             return with (input) {
                 // @formatter:off
                 ClientPingMessage(
-                    ping = field("ping")       { readUnsignedIntLe() },
-                    latency = field("latency") { readUnsignedIntLe() })
+                    ping = field("ping")       { readUnsignedIntLE() },
+                    latency = field("latency") { readUnsignedIntLE() })
                 // @formatter:on
             }
         }

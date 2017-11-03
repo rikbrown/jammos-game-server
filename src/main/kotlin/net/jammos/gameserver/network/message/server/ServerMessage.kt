@@ -1,19 +1,18 @@
 package net.jammos.gameserver.network.message.server
 
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import mu.KLogging
 import net.jammos.gameserver.network.ServerCommand
 import net.jammos.gameserver.network.message.crypto.MessageCrypto
-import java.io.DataOutput
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 abstract class ServerMessage(val command: ServerCommand) {
     companion object : KLogging()
 
-    abstract fun writeData(output: DataOutput)
+    abstract fun writeData(output: ByteBuf)
     abstract val size: Int
 
-    fun write(output: DataOutput, crypto: MessageCrypto) {
+    fun write(output: ByteBuf, crypto: MessageCrypto) {
         // Payload = 4b + {size}b
         // header + data
         Header(size, command).write(output, crypto)
@@ -22,17 +21,15 @@ abstract class ServerMessage(val command: ServerCommand) {
 
     data class Header(val size: Int, val command: ServerCommand) {
 
-        fun write(output: DataOutput, crypto: MessageCrypto) {
+        fun write(output: ByteBuf, crypto: MessageCrypto) {
             // Header payload = 2b + 2b
             // size (uint16) + command (unit16, LE)
-            val unencrypted = ByteBuffer
-                    .allocate(4)
-                    .putShort((size + 2).toShort())
-                    .order(ByteOrder.LITTLE_ENDIAN) // this works but changing order midway might be sketch.
-                    .putShort(command.value.toShort())
+            val unencrypted = Unpooled.buffer(4)
+                    .writeShort(size + 2)
+                    .writeShortLE(command.value)
                     .array()
 
-            output.write(crypto.encrypt(unencrypted))
+            output.writeBytes(crypto.encrypt(unencrypted))
         }
 
     }

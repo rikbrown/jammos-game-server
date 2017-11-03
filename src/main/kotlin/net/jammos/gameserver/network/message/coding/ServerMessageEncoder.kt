@@ -6,7 +6,6 @@ import io.netty.handler.codec.MessageToByteEncoder
 import mu.KLogging
 import net.jammos.gameserver.network.JammosAttributes.CRYPTO_ATTRIBUTE
 import net.jammos.gameserver.network.message.server.ServerMessage
-import net.jammos.utils.extensions.asDataOutput
 
 class ServerMessageEncoder : MessageToByteEncoder<ServerMessage>() {
     companion object : KLogging()
@@ -16,7 +15,7 @@ class ServerMessageEncoder : MessageToByteEncoder<ServerMessage>() {
             val crypto = ctx.channel().attr(CRYPTO_ATTRIBUTE).get()
 
             logger.info { "Writing message: $msg" }
-            msg.write(out.asDataOutput(), crypto)
+            msg.write(out, crypto)
 
         } catch (e: Exception) {
             logger.error(e) { "Error encoding output: $msg" }

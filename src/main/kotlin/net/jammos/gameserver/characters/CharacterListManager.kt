@@ -11,11 +11,11 @@ class CharacterListManager(private val characterDao: CharacterDao) {
             race: Race,
             characterClass: CharacterClass,
             gender: Gender,
-            skin: Int,
-            face: Int,
-            hairStyle: Int,
-            hairColour: Int,
-            facialHair: Int): GameCharacter {
+            skin: Short,
+            face: Short,
+            hairStyle: Short,
+            hairColour: Short,
+            facialHair: Short): GameCharacter {
 
         // Create character
         return characterDao.createCharacter(GameCharacter(

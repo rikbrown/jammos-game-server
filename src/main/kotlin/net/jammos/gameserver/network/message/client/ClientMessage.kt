@@ -2,13 +2,13 @@ package net.jammos.gameserver.network.message.client
 
 import com.google.common.collect.Maps.immutableEnumMap
 import com.google.common.io.ByteStreams
+import io.netty.buffer.ByteBuf
 import mu.KLogging
 import net.jammos.gameserver.network.ClientCommand
 import net.jammos.gameserver.network.ClientCommand.AUTH_SESSION
 import net.jammos.gameserver.network.message.crypto.MessageCrypto
-import net.jammos.utils.extensions.readBytes
+import net.jammos.utils.extensions.readByteArray
 import net.jammos.utils.field
-import java.io.DataInput
 
 interface ClientMessage {
     companion object: KLogging() {
@@ -20,7 +20,7 @@ interface ClientMessage {
                 ClientCommand.CHAR_CREATE to ClientCharCreateMessage.Companion,
                 ClientCommand.CHAR_DELETE to ClientCharDeleteMessage.Companion))
 
-        fun read(input: DataInput, crypto: MessageCrypto): ClientMessage {
+        fun read(input: ByteBuf, crypto: MessageCrypto): ClientMessage {
             // Read header
             val header = Header.read(input, crypto)
 
@@ -40,10 +40,10 @@ interface ClientMessage {
 
     data class Header(val size: Int, val command: ClientCommand) {
         companion object {
-            fun read(input: DataInput, crypto: MessageCrypto): Header {
+            fun read(input: ByteBuf, crypto: MessageCrypto): Header {
                 // Header: 2b + 4b
                 // size + command
-                val bytes = input.readBytes(6)
+                val bytes = input.readByteArray(6)
 
                 // Decrypt
                 val decryptedInput = ByteStreams.newDataInput(crypto.decrypt(bytes))
@@ -62,7 +62,7 @@ interface ClientMessage {
     }
 
     interface Reader<out T: ClientMessage> {
-        fun readBody(input: DataInput): T
+        fun readBody(input: ByteBuf): T
     }
 
     class UnsupportedCommandException(cmd: ClientCommand): IllegalArgumentException("Unsupported command: $cmd)")

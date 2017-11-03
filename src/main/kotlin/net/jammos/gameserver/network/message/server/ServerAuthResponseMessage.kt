@@ -1,16 +1,17 @@
 package net.jammos.gameserver.network.message.server
 
+import io.netty.buffer.ByteBuf
 import net.jammos.gameserver.network.ServerCommand.AUTH_RESPONSE
+import net.jammos.utils.extensions.writeByte
 import net.jammos.utils.types.WriteableByte
-import java.io.DataOutput
 
 data class ServerAuthResponseMessage(
         val response: AuthResponseCode,
         val successData: SuccessData? = null): ServerMessage(AUTH_RESPONSE) {
     override val size = 1 + (successData?.size ?: 0)
 
-    override fun writeData(output: DataOutput) {
-        response.write(output)
+    override fun writeData(output: ByteBuf) {
+        output.writeByte(response)
         successData?.write(output)
     }
 
@@ -21,10 +22,10 @@ data class ServerAuthResponseMessage(
 
         val size = 4 + 1 + 4
 
-        fun write(output: DataOutput) {
-            output.writeInt(billingTimeRemaining)
+        fun write(output: ByteBuf) {
+            output.writeIntLE(billingTimeRemaining)
             output.writeByte(billingPlanFlags)
-            output.writeInt(billingTimeRested)
+            output.writeIntLE(billingTimeRested)
         }
     }
 
