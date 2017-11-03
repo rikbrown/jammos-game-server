@@ -14,7 +14,7 @@ data class ServerCharCreateResultMessage(
         output.writeByte(status)
     }
 
-    enum class CharacterCreateStatus(override val value: Int): WriteableByte {
+    enum class CharacterCreateStatus(override val value: Short): WriteableByte {
         SUCCESS(0x2E),
         ERROR(0x2F),
         FAILED(0x30),

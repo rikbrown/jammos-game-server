@@ -66,7 +66,7 @@ data class CharacterId @JsonCreator(mode = DELEGATING) constructor(@JsonValue va
 }
 
 
-enum class Race(override val value: Int): WriteableByte {
+enum class Race(override val value: Short): WriteableByte {
     Human(1),
     Orc(2),
     Dwarf(3),
@@ -80,14 +80,14 @@ enum class Race(override val value: Int): WriteableByte {
     companion object: ReversibleByte<Race>(values())
 }
 
-enum class CharacterClass(override val value: Int): WriteableByte {
+enum class CharacterClass(override val value: Short): WriteableByte {
     Warrior(1),
     Hunter(3);
 
     companion object: ReversibleByte<CharacterClass>(values())
 }
 
-enum class Gender(override val value: Int): WriteableByte {
+enum class Gender(override val value: Short): WriteableByte {
     Male(0),
     Female(1);
 

@@ -26,7 +26,7 @@ abstract class ServerMessage(val command: ServerCommand) {
             // size (uint16) + command (unit16, LE)
             val unencrypted = Unpooled.buffer(4)
                     .writeShort(size + 2)
-                    .writeShortLE(command.value)
+                    .writeShortLE(command.value.toInt())
                     .array()
 
             output.writeBytes(crypto.encrypt(unencrypted))

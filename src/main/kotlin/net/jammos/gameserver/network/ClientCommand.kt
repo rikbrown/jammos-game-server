@@ -5,7 +5,7 @@ import net.jammos.utils.extensions.toHexString
 import net.jammos.utils.types.ReversibleByte
 import net.jammos.utils.types.WriteableByte
 
-enum class ClientCommand(override val value: Int): WriteableByte {
+enum class ClientCommand(override val value: Short): WriteableByte {
     /**
      * Session authentication challenge
      */
@@ -22,16 +22,16 @@ enum class ClientCommand(override val value: Int): WriteableByte {
          */
         fun read(input: ByteBuf): ClientCommand {
             val int = input.readUnsignedIntLE()
-            return ofValueOrNull(int.toInt()) ?: throw IllegalCommandException(int.toInt())
+            return ofValueOrNull(int.toShort()) ?: throw IllegalCommandException(int)
         }
     }
 
     override fun toString() = "${super.toString()} (${value.toHexString(3)})"
 
-    class IllegalCommandException(cmd: Int): IllegalArgumentException("Illegal command: $cmd (${cmd.toHexString(3)})")
+    class IllegalCommandException(cmd: Long): IllegalArgumentException("Illegal command: $cmd (${cmd.toHexString(3)})")
 }
 
-enum class ServerCommand(override val value: Int): WriteableByte {
+enum class ServerCommand(override val value: Short): WriteableByte {
     AUTH_CHALLENGE(0x1EC),
     AUTH_RESPONSE(0x1EE),
     PONG(0x1DD),

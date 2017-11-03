@@ -29,7 +29,7 @@ data class ServerAuthResponseMessage(
         }
     }
 
-    enum class AuthResponseCode(override val value: Int): WriteableByte {
+    enum class AuthResponseCode(override val value: Short): WriteableByte {
         AUTH_OK(0x0C),
         AUTH_UNKNOWN_ACCOUNT(0x15),
         AUTH_BANNED(0x1C),

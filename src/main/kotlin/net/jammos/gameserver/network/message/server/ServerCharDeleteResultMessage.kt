@@ -14,7 +14,7 @@ data class ServerCharDeleteResultMessage(
         output.writeByte(status)
     }
 
-    enum class CharacterDeleteStatus(override val value: Int): WriteableByte {
+    enum class CharacterDeleteStatus(override val value: Short): WriteableByte {
         SUCCESS(0x39),
         FAILED(0x3A);
     }
