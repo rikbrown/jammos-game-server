@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandler
 import io.netty.channel.ChannelHandlerContext
 import net.jammos.gameserver.network.message.client.ClientPingMessage
 import net.jammos.gameserver.network.message.server.ServerPongMessage
+import net.jammos.utils.network.handler.JammosHandler
 
 @ChannelHandler.Sharable
 object PingHandler: JammosHandler() {

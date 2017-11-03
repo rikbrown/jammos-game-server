@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
 import mu.KLogging
-import net.jammos.gameserver.network.JammosAttributes.CRYPTO_ATTRIBUTE
+import net.jammos.gameserver.network.JammosGameAttributes.CRYPTO_ATTRIBUTE
 import net.jammos.gameserver.network.message.server.ServerMessage
 
 class ServerMessageEncoder : MessageToByteEncoder<ServerMessage>() {

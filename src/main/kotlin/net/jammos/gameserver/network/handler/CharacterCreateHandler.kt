@@ -12,7 +12,7 @@ import net.jammos.gameserver.network.message.server.ServerCharCreateResultMessag
  *
  * @notes See Elysium: void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
  */
-class CharacterCreateHandler(private val characterListManager: CharacterListManager): AuthenticatedJammosHandler() {
+class CharacterCreateHandler(private val characterListManager: CharacterListManager): AuthenticatedGameHandler() {
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
         if (msg !is ClientCharCreateMessage) return pass(ctx, msg)
 

@@ -5,7 +5,7 @@ import net.jammos.gameserver.characters.CharacterListManager
 import net.jammos.gameserver.network.message.client.ClientCharEnumMessage
 import net.jammos.gameserver.network.message.server.ServerCharEnumMessage
 
-class CharacterListHandler(private val characterListManager: CharacterListManager): AuthenticatedJammosHandler() {
+class CharacterListHandler(private val characterListManager: CharacterListManager): AuthenticatedGameHandler() {
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
         if (msg !is ClientCharEnumMessage) return pass(ctx, msg)
 

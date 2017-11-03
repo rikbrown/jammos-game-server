@@ -6,9 +6,9 @@ import net.jammos.gameserver.auth.SessionAuthValidator
 import net.jammos.gameserver.auth.SessionValidationFailure
 import net.jammos.gameserver.auth.SuspendedException
 import net.jammos.gameserver.auth.UnknownUserException
-import net.jammos.gameserver.network.JammosAttributes.CRYPTO_ATTRIBUTE
-import net.jammos.gameserver.network.JammosAttributes.USERID_ATTRIBUTE
-import net.jammos.gameserver.network.JammosAttributes.USERNAME_ATTRIBUTE
+import net.jammos.gameserver.network.JammosGameAttributes.CRYPTO_ATTRIBUTE
+import net.jammos.gameserver.network.JammosGameAttributes.USERID_ATTRIBUTE
+import net.jammos.gameserver.network.JammosGameAttributes.USERNAME_ATTRIBUTE
 import net.jammos.gameserver.network.message.client.ClientAuthSessionMessage
 import net.jammos.gameserver.network.message.crypto.DefaultMessageCrypto
 import net.jammos.gameserver.network.message.crypto.NullMessageCrypto
@@ -16,6 +16,7 @@ import net.jammos.gameserver.network.message.server.ServerAuthChallengeMessage
 import net.jammos.gameserver.network.message.server.ServerAuthResponseMessage
 import net.jammos.gameserver.network.message.server.ServerAuthResponseMessage.AuthResponseCode.*
 import net.jammos.utils.ByteArrays
+import net.jammos.utils.network.handler.JammosHandler
 
 class AuthSessionHandler(private val authValidator: SessionAuthValidator): JammosHandler() {
     companion object: KLogging()

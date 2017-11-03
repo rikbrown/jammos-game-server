@@ -11,7 +11,7 @@ import net.jammos.gameserver.network.message.server.ServerCharDeleteResultMessag
  *
  * @notes see Elysium void WorldSession::HandleCharDeleteOpcode(WorldPacket & recv_data)
  */
-class CharacterDeleteHandler(private val characterListManager: CharacterListManager): AuthenticatedJammosHandler() {
+class CharacterDeleteHandler(private val characterListManager: CharacterListManager): AuthenticatedGameHandler() {
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
         if (msg !is ClientCharDeleteMessage) return pass(ctx, msg)
 

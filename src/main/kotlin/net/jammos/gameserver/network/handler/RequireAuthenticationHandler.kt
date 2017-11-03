@@ -2,7 +2,8 @@ package net.jammos.gameserver.network.handler
 
 import io.netty.channel.ChannelHandlerContext
 import mu.KLogging
-import net.jammos.gameserver.network.JammosAttributes.USERNAME_ATTRIBUTE
+import net.jammos.gameserver.network.JammosGameAttributes.USERNAME_ATTRIBUTE
+import net.jammos.utils.network.handler.JammosHandler
 
 class RequireAuthenticationHandler: JammosHandler() {
     companion object: KLogging()

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
 import mu.KLogging
-import net.jammos.gameserver.network.JammosAttributes.CRYPTO_ATTRIBUTE
+import net.jammos.gameserver.network.JammosGameAttributes.CRYPTO_ATTRIBUTE
 import net.jammos.gameserver.network.message.client.ClientMessage
 import net.jammos.gameserver.network.message.crypto.MessageCrypto
 import net.jammos.gameserver.network.message.crypto.NullMessageCrypto
