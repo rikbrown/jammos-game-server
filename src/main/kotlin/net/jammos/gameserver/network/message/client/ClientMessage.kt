@@ -1,8 +1,8 @@
 package net.jammos.gameserver.network.message.client
 
 import com.google.common.collect.Maps.immutableEnumMap
-import com.google.common.io.ByteStreams
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import mu.KLogging
 import net.jammos.gameserver.network.ClientCommand
 import net.jammos.gameserver.network.ClientCommand.AUTH_SESSION
@@ -46,7 +46,7 @@ interface ClientMessage {
                 val bytes = input.readByteArray(6)
 
                 // Decrypt
-                val decryptedInput = ByteStreams.newDataInput(crypto.decrypt(bytes))
+                val decryptedInput = Unpooled.wrappedBuffer(crypto.decrypt(bytes))
 
                 // Read size
                 val size = field("size") { decryptedInput.readUnsignedShort() }

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf
 import net.jammos.utils.auth.Username
 import net.jammos.utils.auth.Username.Username.username
 import net.jammos.utils.extensions.readByteArray
-import net.jammos.utils.extensions.readChars
+import net.jammos.utils.extensions.readCharsUntil
 import net.jammos.utils.field
 import net.jammos.utils.types.DigestByteArray
 
@@ -23,7 +23,7 @@ data class ClientAuthSessionMessage(
                 ClientAuthSessionMessage(
                         clientBuildNumber = field("clientBuildNumber") { readUnsignedIntLE() },
                         serverId          = field("serverId")          { readUnsignedIntLE() },
-                        accountName       = field("accountName")       { username(readChars(reverse = false)) },
+                        accountName       = field("accountName")       { username(readCharsUntil(0)) },
                         clientSeed        = field("clientSeed")        { readByteArray(4) },
                         digest            = field("digest")            { DigestByteArray(readByteArray(20)) }
                 )

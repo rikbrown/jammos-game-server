@@ -5,7 +5,7 @@ import net.jammos.gameserver.characters.CharacterClass
 import net.jammos.gameserver.characters.Gender
 import net.jammos.gameserver.characters.Race
 import net.jammos.gameserver.network.message.client.ClientMessage.Reader
-import net.jammos.utils.extensions.readChars
+import net.jammos.utils.extensions.readCharsUntil
 import net.jammos.utils.field
 
 data class ClientCharCreateMessage(
@@ -24,7 +24,7 @@ data class ClientCharCreateMessage(
         override fun readBody(input: ByteBuf) = with (input) {
             // @formatter:off
             ClientCharCreateMessage(
-                    name = field("name")             { readChars(reverse = false) },
+                    name = field("name")             { readCharsUntil(0) },
                     race = field("race")             { Race.ofValue(readUnsignedByte()) },
                     characterClass = field("class")  { CharacterClass.ofValue(readUnsignedByte()) },
                     gender = field("gender")         { Gender.ofValue(readUnsignedByte()) },
