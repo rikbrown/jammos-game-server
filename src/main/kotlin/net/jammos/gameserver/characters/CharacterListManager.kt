@@ -1,6 +1,8 @@
 package net.jammos.gameserver.characters
 
 import mu.KLogging
+import net.jammos.gameserver.Position
+import net.jammos.gameserver.zones.Zone
 import net.jammos.utils.auth.UserId
 
 class CharacterListManager(private val characterDao: CharacterDao) {
@@ -29,11 +31,9 @@ class CharacterListManager(private val characterDao: CharacterDao) {
                 hairStyle = hairStyle,
                 hairColour = hairColour,
                 facialHair = facialHair,
-                zone = 0, // TODO
+                zone = Zone.NONE, // TODO
                 map = 0, // TODO
-                x = 0F, // TODO
-                y = 0F, // TODO
-                z = 0F, // TODO
+                position = Position.ZERO, // TODO
                 firstLogin = true))
     }
 

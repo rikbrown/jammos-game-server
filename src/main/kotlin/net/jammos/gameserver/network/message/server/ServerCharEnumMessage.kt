@@ -6,7 +6,6 @@ import net.jammos.gameserver.characters.GameCharacter
 import net.jammos.gameserver.network.ServerCommand.CHAR_ENUM
 import net.jammos.utils.extensions.writeByte
 import net.jammos.utils.extensions.writeCharSequenceTerminated
-import net.jammos.utils.extensions.writeFloatLE
 
 data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMessage(CHAR_ENUM) {
     companion object: KLogging()
@@ -16,7 +15,6 @@ data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMess
 
     override fun writeData(output: ByteBuf) {
         with (output) {
-            // FIXME: rethink all this
             writeByte(characters.size) // character count
 
             characters.forEach { character ->
@@ -31,17 +29,17 @@ data class ServerCharEnumMessage(val characters: Set<GameCharacter>): ServerMess
                 writeByte(character.hairColour)
                 writeByte(character.facialHair)
                 writeByte(character.level)
-                writeIntLE(character.zone)
+                writeIntLE(character.zone.zone)
                 writeIntLE(character.map)
-                writeFloatLE(character.x)
-                writeFloatLE(character.y)
-                writeFloatLE(character.z)
+                writeFloatLE(character.position.x)
+                writeFloatLE(character.position.y)
+                writeFloatLE(character.position.z)
                 writeIntLE(character.guildId)
-                writeIntLE(character.flags.toInt())
+                writeIntLE(character.flags.intValue)
                 writeBoolean(character.firstLogin)
-                writeIntLE(character.petId)
-                writeIntLE(character.petLevel)
-                writeIntLE(character.petFamily)
+                writeIntLE(character.pet?.id ?: 0)
+                writeIntLE(character.pet?.level ?: 0)
+                writeIntLE(character.pet?.family ?: 0)
 
                 // Equipment slots
                 for (i in 1..19) {
