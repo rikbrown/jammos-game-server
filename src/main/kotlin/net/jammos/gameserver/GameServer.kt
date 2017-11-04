@@ -12,6 +12,8 @@ import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.timeout.ReadTimeoutHandler
 import net.jammos.gameserver.auth.SessionAuthValidator
 import net.jammos.gameserver.characters.*
+import net.jammos.gameserver.config.ConfigManager
+import net.jammos.gameserver.config.RedisConfigDao
 import net.jammos.gameserver.network.handler.*
 import net.jammos.gameserver.network.message.coding.ClientMessageDecoder
 import net.jammos.gameserver.network.message.coding.ServerMessageEncoder
@@ -28,10 +30,15 @@ private const val TIMEOUT = 100
 object GameServer {
     private val redis = RedisClient.create("redis://localhost")
     private val cryptoManager = CryptoManager()
+
+    private val configDao = RedisConfigDao(redis)
+    private val configManager = ConfigManager(configDao)
+
     private val authDao = RedisAuthDao(redis, cryptoManager)
     private val authValidator = SessionAuthValidator(authDao, cryptoManager)
+
     private val characterDao = RedisCharacterDao(redis)
-    private val characterListManager = CharacterListManager(characterDao)
+    private val characterListManager = CharacterListManager(characterDao, configManager)
 
     init {
         val rikUser = authDao.getUserAuth(Username.username("rik")) ?: authDao.createUser(Username.username("rik"), "1234")

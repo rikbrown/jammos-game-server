@@ -2,10 +2,13 @@ package net.jammos.gameserver.characters
 
 import mu.KLogging
 import net.jammos.gameserver.Position
+import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.zones.Zone
 import net.jammos.utils.auth.UserId
 
-class CharacterListManager(private val characterDao: CharacterDao) {
+class CharacterListManager(
+        private val characterDao: CharacterDao,
+        private val configManager: ConfigManager) {
 
     fun createCharacter(
             userId: UserId,
