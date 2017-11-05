@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import mu.KLogging
 import net.jammos.gameserver.characters.CharacterListManager
 import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure
-import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.CharacterCreationDisabled
+import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.*
 import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.IllegalCharacterName.*
 import net.jammos.gameserver.network.message.client.ClientCharCreateMessage
 import net.jammos.gameserver.network.message.server.ServerCharCreateResultMessage
@@ -46,6 +46,8 @@ class CharacterCreateHandler(private val characterListManager: CharacterListMana
                 is CharacterNameTooLong -> NAME_TOO_LONG
                 is CharacterNameReserved -> NAME_RESERVED
                 is CharacterNameInUse -> NAME_IN_USE
+                is TooManyCharacters -> REALM_LIMIT_REACHED
+                is MultipleTeamsNotAllowed -> PVP_TEAM_VIOLATION
             }
             else -> FAILED
         }))

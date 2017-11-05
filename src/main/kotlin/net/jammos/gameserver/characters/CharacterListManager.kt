@@ -2,7 +2,7 @@ package net.jammos.gameserver.characters
 
 import mu.KLogging
 import net.jammos.gameserver.Position
-import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.CharacterCreationDisabled
+import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.*
 import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.IllegalCharacterName.*
 import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.zones.Zone
@@ -33,6 +33,9 @@ class CharacterListManager(
         validateName(normalisedName) // Is valid name?
         if (!config.isCreatingCharacterEnabled(race, characterClass)) throw CharacterCreationDisabled // Can create for race?
         if (characterDao.getCharacter(normalisedName) != null) throw CharacterNameInUse(normalisedName) // Name taken?
+        if (config.maxCharsPerAccount() <= characterDao.getCharacterCount(userId)) throw TooManyCharacters // Too many chars?
+        if (config.allowMultipleTeamsInAccount() || characterDao.listCharacters(userId).any { it.race.team != race.team })
+            throw MultipleTeamsNotAllowed // PvP team violation
 
         // Create character
         return characterDao.createCharacter(GameCharacter(
@@ -84,6 +87,8 @@ class CharacterListManager(
 
     sealed class CharacterCreationFailure(reason: String): Exception(reason) {
         object CharacterCreationDisabled: CharacterCreationFailure("Character creation is disabled")
+        object TooManyCharacters: CharacterCreationFailure("Too many characters")
+        object MultipleTeamsNotAllowed: CharacterCreationFailure("Multiple teams per account isn't allowed")
         sealed class IllegalCharacterName(name: String, reason: String): CharacterCreationFailure("Name $name was not valid ($reason)") {
             class CharacterNameTooShort(name: String) : IllegalCharacterName(name, "Length too short (<$MIN_NAME_LENGTH)")
             class CharacterNameTooLong(name: String) : IllegalCharacterName(name, "Length too short (>$MAX_NAME_LENGTH)")

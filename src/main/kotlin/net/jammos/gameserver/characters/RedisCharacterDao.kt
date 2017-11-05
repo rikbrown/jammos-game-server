@@ -13,7 +13,6 @@ import net.jammos.utils.json.toJson
 import java.util.concurrent.CompletionStage
 
 class RedisCharacterDao(redisClient: RedisClient): CharacterDao {
-
     private val conn = redisClient.connect().async()
 
     override fun createCharacter(character: GameCharacter, overwriteExisting: Boolean) = runBlocking {
@@ -54,6 +53,10 @@ class RedisCharacterDao(redisClient: RedisClient): CharacterDao {
                 .mapNotNull { it.await() }
                 .map { it.fromJson<GameCharacter>() }
                 .toSet()
+    }
+
+    override fun getCharacterCount(userId: UserId): Long {
+        return conn.scard(userCharactersKey(userId)).get()
     }
 
     override fun getCharacter(characterId: CharacterId): GameCharacter? {

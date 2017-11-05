@@ -44,7 +44,7 @@ object GameServer {
 
     init {
         // Setup world configuration
-        configManager.set(IS_RACE_CHARACTER_CREATION_ENABLED[Team.Alliance]!!, false)
+        configManager.set(IS_RACE_CHARACTER_CREATION_ENABLED[Team.Alliance]!!, true)
         configManager.set(RESERVED_CHARACTER_NAMES, setOf("Sisko", "Dukat"))
 
         // Setup some users
