@@ -2,13 +2,19 @@ package net.jammos.gameserver.characters
 
 import mu.KLogging
 import net.jammos.gameserver.Position
+import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.CharacterCreationDisabled
+import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFailure.IllegalCharacterName.*
 import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.zones.Zone
 import net.jammos.utils.auth.UserId
 
+const private val MAX_NAME_LENGTH = 12 // max allowed by client
+const private val MIN_NAME_LENGTH = 2 // min allowed by client (todo: configurable?)
+
 class CharacterListManager(
         private val characterDao: CharacterDao,
-        private val configManager: ConfigManager) {
+        configManager: ConfigManager) {
+    private val config = CharacterConfig(configManager)
 
     fun createCharacter(
             userId: UserId,
@@ -22,10 +28,16 @@ class CharacterListManager(
             hairColour: Short,
             facialHair: Short): GameCharacter {
 
+        val normalisedName = normaliseName(name)
+
+        validateName(normalisedName) // Is valid name?
+        if (!config.isCreatingCharacterEnabled(race, characterClass)) throw CharacterCreationDisabled // Can create for race?
+        if (characterDao.getCharacter(normalisedName) != null) throw CharacterNameInUse(normalisedName) // Name taken?
+
         // Create character
         return characterDao.createCharacter(GameCharacter(
                 userId = userId,
-                name = name,
+                name = normalisedName,
                 race = race,
                 characterClass = characterClass,
                 gender = gender,
@@ -55,6 +67,30 @@ class CharacterListManager(
     fun getCharacters(userId: UserId) = characterDao.listCharacters(userId)
     private fun getCharacter(characterId: CharacterId) = characterDao.getCharacter(characterId)
 
+    private fun normaliseName(name: String): String = name
+            .toLowerCase()
+            // TODO: do we need to de-utf8 or anything? Do we care?
+            .capitalize()
+
+    private fun validateName(name: String) {
+        if (name.isBlank()) throw CharacterNameBlank(name)
+        if (name.length < MIN_NAME_LENGTH) throw CharacterNameTooShort(name)
+        if (name.length > MAX_NAME_LENGTH) throw CharacterNameTooLong(name)
+        if (config.isNameReserved(name)) throw CharacterNameReserved(name)
+        // TODO: support checking if name is mixed languages, if we even care
+    }
 
     companion object: KLogging()
+
+    sealed class CharacterCreationFailure(reason: String): Exception(reason) {
+        object CharacterCreationDisabled: CharacterCreationFailure("Character creation is disabled")
+        sealed class IllegalCharacterName(name: String, reason: String): CharacterCreationFailure("Name $name was not valid ($reason)") {
+            class CharacterNameTooShort(name: String) : IllegalCharacterName(name, "Length too short (<$MIN_NAME_LENGTH)")
+            class CharacterNameTooLong(name: String) : IllegalCharacterName(name, "Length too short (>$MAX_NAME_LENGTH)")
+            class CharacterNameBlank(name: String) : IllegalCharacterName(name, "Blank")
+            class CharacterNameReserved(name: String) : IllegalCharacterName(name, "Reserved")
+            class CharacterNameInUse(name: String) : IllegalCharacterName(name, "In use")
+        }
+    }
+
 }

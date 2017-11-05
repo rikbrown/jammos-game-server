@@ -25,9 +25,10 @@ class ConfigManager(val configDao: ConfigDao) {
     }
 
     @Suppress("UNCHECKED_CAST") // guaranteed by loading cache
-    fun <T> get(key: ConfigKey<T>): T? = config.get(key).orElse(null) as T? ?: key.default
+    fun <T> get(key: ConfigKey<T>): T = config.get(key).orElse(null) as T? ?: key.default
+            ?: throw IllegalStateException("Configuration not setup for $key")
 
-    fun <T> set(key: ConfigKey<T>, value: T) = {
+    fun <T> set(key: ConfigKey<T>, value: T) {
         configDao.set(ConfigEntry(key, value))
         config.refresh(key)
     }

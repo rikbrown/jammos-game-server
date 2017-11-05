@@ -1,15 +1,40 @@
 package net.jammos.gameserver.config
 
+import net.jammos.gameserver.characters.Team
+import net.jammos.utils.json.objectMapper
+import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 object ConfigKeys {
-    val IS_CHARACTER_CREATION_ENABLED = JsonConfigKey("isCharacterCreationEnabled", CharacterCreationEnabled::class, CharacterCreationEnabled(false, false))
+    val IS_RACE_CHARACTER_CREATION_ENABLED = Team.values()
+            .associateBy({ it }, { BooleanConfigKey("IsRaceCharacterCreationEnabled.${it.name}", true) })
+
+    val RESERVED_CHARACTER_NAMES = SetConfigKey("ReservedCharacterNames")
 
     val values: Set<ConfigKey<*>> = ConfigKeys::class.memberProperties
             .map { it.get(this) }
+            .flatMap { (it as? Map<*, *>)?.values ?: setOf(it) } // if it's a map property, get it's values
             .filter { it is ConfigKey<*> }
             .map { it as ConfigKey<*> }
             .toSet()
 }
 
-data class CharacterCreationEnabled(val alliance: Boolean, val horde: Boolean)
+sealed class ConfigKey<T>(private val fromString: (String) -> T, private val toString: (T) -> String = { it.toString() }) {
+    abstract val key: String
+    abstract val default: T?
+    fun valueToString(value: T) = toString(value)
+    fun valueFromString(string: String) = fromString(string)
+
+    override fun toString() = key
+}
+
+class StringConfigKey(override val key: String, override val default: String? = null): ConfigKey<String>({ it }, { it })
+class BooleanConfigKey(override val key: String, override val default: Boolean = false): ConfigKey<Boolean>(String::toBoolean)
+class SetConfigKey(override val key: String, override val default: Set<String> = setOf()): JsonConfigKey<Set<String>>(key, Set::class as KClass<Set<String>>, setOf())
+
+open class JsonConfigKey<T: Any>(override val key: String, clazz: KClass<T>, override val default: T? = null): ConfigKey<T>({ objectMapper.readValue(it, clazz.java) }, objectMapper::writeValueAsString)
+
+data class ConfigEntry<T>(private val configKey: ConfigKey<T>, private val value: T) {
+    val key = configKey.key
+    val valueString by lazy { configKey.valueToString(value) }
+}

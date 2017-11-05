@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
 import net.jammos.gameserver.Position
 import net.jammos.gameserver.characters.CharacterId.Companion.UNDEFINED
+import net.jammos.gameserver.characters.Team.Alliance
+import net.jammos.gameserver.characters.Team.Horde
 import net.jammos.gameserver.zones.Zone
 import net.jammos.utils.auth.UserId
 import net.jammos.utils.checkArgument
@@ -75,17 +77,25 @@ data class CharacterId @JsonCreator(mode = DELEGATING) constructor(@JsonValue va
     }
 }
 
+/**
+ * Player teams
+ * TODO: values taken from SharedDefines.h but not actually tested by writing anywhere.  Check later.
+ */
+enum class Team(override val value: Short): WriteableByte {
+    Horde(67),
+    Alliance(469)
+}
 
-enum class Race(override val value: Short): WriteableByte {
-    Human(1),
-    Orc(2),
-    Dwarf(3),
-    NightElf(4),
-    Undead(5),
-    Tauren(6),
-    Gnome(7),
-    Troll(8),
-    Goblin(9);
+enum class Race(override val value: Short, val team: Team): WriteableByte {
+    Human(1, Alliance),
+    Orc(2, Horde),
+    Dwarf(3, Alliance),
+    NightElf(4, Alliance),
+    Undead(5, Horde),
+    Tauren(6, Horde),
+    Gnome(7, Alliance),
+    Troll(8, Horde),
+    Goblin(9, Horde); // I guess?
 
     companion object: ReversibleByte<Race>(values())
 }

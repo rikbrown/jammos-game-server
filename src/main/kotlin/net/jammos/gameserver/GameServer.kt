@@ -12,8 +12,8 @@ import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.timeout.ReadTimeoutHandler
 import net.jammos.gameserver.auth.SessionAuthValidator
 import net.jammos.gameserver.characters.*
-import net.jammos.gameserver.config.CharacterCreationEnabled
-import net.jammos.gameserver.config.ConfigKeys
+import net.jammos.gameserver.config.ConfigKeys.IS_RACE_CHARACTER_CREATION_ENABLED
+import net.jammos.gameserver.config.ConfigKeys.RESERVED_CHARACTER_NAMES
 import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.config.RedisConfigDao
 import net.jammos.gameserver.network.handler.*
@@ -26,10 +26,10 @@ import net.jammos.utils.auth.dao.RedisAuthDao
 import java.net.InetAddress
 import java.time.Instant
 
-private const val PORT = 1234
-private const val TIMEOUT = 100
-
 object GameServer {
+    private const val PORT = 1234
+    private const val TIMEOUT = 100
+
     private val redis = RedisClient.create("redis://localhost")
     private val cryptoManager = CryptoManager()
 
@@ -44,7 +44,8 @@ object GameServer {
 
     init {
         // Setup world configuration
-        configManager.set(ConfigKeys.IS_CHARACTER_CREATION_ENABLED, CharacterCreationEnabled(alliance = true, horde = true))
+        configManager.set(IS_RACE_CHARACTER_CREATION_ENABLED[Team.Alliance]!!, false)
+        configManager.set(RESERVED_CHARACTER_NAMES, setOf("Sisko", "Dukat"))
 
         // Setup some users
         val rikUser = authDao.getUserAuth(Username.username("rik")) ?: authDao.createUser(Username.username("rik"), "1234")
@@ -61,7 +62,7 @@ object GameServer {
                 end = Instant.now())
 
         // Setup some characters
-        characterDao.createCharacter(GameCharacter(
+        characterDao.createCharacter(overwriteExisting = true, character = GameCharacter(
                 userId = rikUser.userId,
                 id = CharacterId(1),
                 name = "Rikalorgh",
@@ -79,7 +80,7 @@ object GameServer {
                 position = Position.ZERO,
                 guildId = 0,
                 firstLogin = false))
-        characterDao.createCharacter(GameCharacter(
+        characterDao.createCharacter(overwriteExisting = true, character = GameCharacter(
                 userId = rikUser.userId,
                 id = CharacterId(2),
                 name = "Mazornus",
