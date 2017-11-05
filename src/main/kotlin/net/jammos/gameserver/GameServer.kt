@@ -12,6 +12,8 @@ import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.timeout.ReadTimeoutHandler
 import net.jammos.gameserver.auth.SessionAuthValidator
 import net.jammos.gameserver.characters.*
+import net.jammos.gameserver.config.CharacterCreationEnabled
+import net.jammos.gameserver.config.ConfigKeys
 import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.config.RedisConfigDao
 import net.jammos.gameserver.network.handler.*
@@ -41,6 +43,10 @@ object GameServer {
     private val characterListManager = CharacterListManager(characterDao, configManager)
 
     init {
+        // Setup world configuration
+        configManager.set(ConfigKeys.IS_CHARACTER_CREATION_ENABLED, CharacterCreationEnabled(alliance = true, horde = true))
+
+        // Setup some users
         val rikUser = authDao.getUserAuth(Username.username("rik")) ?: authDao.createUser(Username.username("rik"), "1234")
         val bannedUser = authDao.getUserAuth(Username.username("banned")) ?: authDao.createUser(Username.username("banned"), "banned")
         val suspendedUser = authDao.getUserAuth(Username.username("suspended")) ?: authDao.createUser(Username.username("suspended"), "suspended")
@@ -54,6 +60,7 @@ object GameServer {
                 start = Instant.now(),
                 end = Instant.now())
 
+        // Setup some characters
         characterDao.createCharacter(GameCharacter(
                 userId = rikUser.userId,
                 id = CharacterId(1),
