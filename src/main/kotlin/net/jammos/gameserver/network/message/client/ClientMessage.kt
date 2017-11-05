@@ -19,7 +19,8 @@ interface ClientMessage {
                 ClientCommand.CHAR_ENUM to ClientCharEnumMessage,
                 ClientCommand.CHAR_CREATE to ClientCharCreateMessage.Companion,
                 ClientCommand.CHAR_DELETE to ClientCharDeleteMessage.Companion,
-                ClientCommand.LOGIN to ClientLoginMessage.Companion))
+                ClientCommand.LOGIN to ClientLoginMessage.Companion,
+                ClientCommand.UPDATE_ACCOUNT_DATA to ClientUpdateAccountDataMessage))
 
         fun read(input: ByteBuf, crypto: MessageCrypto): ClientMessage {
             // Read header

@@ -14,7 +14,8 @@ enum class ClientCommand(override val value: Short): WriteableByte {
     CHAR_CREATE(0x036),
     CHAR_ENUM(0x037),
     CHAR_DELETE(0x038),
-    LOGIN(0x03D);
+    LOGIN(0x03D),
+    UPDATE_ACCOUNT_DATA(0x20B);
 
     companion object: ReversibleByte<ClientCommand>(values()) {
         /**
