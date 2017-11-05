@@ -13,6 +13,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler
 import net.jammos.gameserver.auth.SessionAuthValidator
 import net.jammos.gameserver.characters.*
 import net.jammos.gameserver.config.ConfigKeys.IS_RACE_CHARACTER_CREATION_ENABLED
+import net.jammos.gameserver.config.ConfigKeys.MAX_CHARS_PER_ACCOUNT
 import net.jammos.gameserver.config.ConfigKeys.RESERVED_CHARACTER_NAMES
 import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.config.RedisConfigDao
@@ -46,6 +47,7 @@ object GameServer {
         // Setup world configuration
         configManager.set(IS_RACE_CHARACTER_CREATION_ENABLED[Team.Alliance]!!, true)
         configManager.set(RESERVED_CHARACTER_NAMES, setOf("Sisko", "Dukat"))
+        configManager.set(MAX_CHARS_PER_ACCOUNT, 2)
 
         // Setup some users
         val rikUser = authDao.getUserAuth(Username.username("rik")) ?: authDao.createUser(Username.username("rik"), "1234")
@@ -138,7 +140,8 @@ object GameServer {
                                     PingHandler,
                                     CharacterListHandler(characterListManager),
                                     CharacterCreateHandler(characterListManager),
-                                    CharacterDeleteHandler(characterListManager))
+                                    CharacterDeleteHandler(characterListManager),
+                                    VerifyWorldHandler())
                         }
                     })
 

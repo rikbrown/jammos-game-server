@@ -32,8 +32,8 @@ class CharacterListManager(
 
         validateName(normalisedName) // Is valid name?
         if (!config.isCreatingCharacterEnabled(race, characterClass)) throw CharacterCreationDisabled // Can create for race?
-        if (characterDao.getCharacter(normalisedName) != null) throw CharacterNameInUse(normalisedName) // Name taken?
         if (config.maxCharsPerAccount() <= characterDao.getCharacterCount(userId)) throw TooManyCharacters // Too many chars?
+        if (characterDao.getCharacter(normalisedName) != null) throw CharacterNameInUse(normalisedName) // Name taken?
         if (config.allowMultipleTeamsInAccount() || characterDao.listCharacters(userId).any { it.race.team != race.team })
             throw MultipleTeamsNotAllowed // PvP team violation
 
@@ -85,6 +85,9 @@ class CharacterListManager(
 
     companion object: KLogging()
 
+    /**
+     * Exceptions related to character creation
+     */
     sealed class CharacterCreationFailure(reason: String): Exception(reason) {
         object CharacterCreationDisabled: CharacterCreationFailure("Character creation is disabled")
         object TooManyCharacters: CharacterCreationFailure("Too many characters")

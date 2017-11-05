@@ -13,7 +13,8 @@ enum class ClientCommand(override val value: Short): WriteableByte {
     AUTH_SESSION(0x1ED),
     CHAR_CREATE(0x036),
     CHAR_ENUM(0x037),
-    CHAR_DELETE(0x038);
+    CHAR_DELETE(0x038),
+    LOGIN(0x03D);
 
     companion object: ReversibleByte<ClientCommand>(values()) {
         /**
@@ -37,7 +38,9 @@ enum class ServerCommand(override val value: Short): WriteableByte {
     PONG(0x1DD),
     CHAR_CREATE_RESULT(0x03A),
     CHAR_ENUM(0x03B),
-    CHAR_DELETE_RESULT(0x03C);
+    CHAR_DELETE_RESULT(0x03C),
+    LOGIN_VERIFY_WORLD(0x236),
+    ACCOUNT_DATA_TIMES(0x209);
 
     override fun toString() = "${super.toString()} (${value.toHexString(3)})"
 }
