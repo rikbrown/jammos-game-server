@@ -24,24 +24,33 @@ import net.jammos.gameserver.zones.Zone
 import net.jammos.utils.auth.Username
 import net.jammos.utils.auth.crypto.CryptoManager
 import net.jammos.utils.auth.dao.RedisAuthDao
+import net.jammos.utils.realm.RealmId
+import net.jammos.utils.realm.RedisRealmDao
 import java.net.InetAddress
 import java.time.Instant
 
-object GameServer {
-    private const val PORT = 1234
-    private const val TIMEOUT = 100
+private const val PORT = 1234
+private const val AUTH_REDIS_PORT = 15070
+private const val REALM_REDIS_PORT = 15080
+private const val TIMEOUT = 100
 
-    private val redis = RedisClient.create("redis://localhost")
+object GameServer {
+    private val REALM_ID = RealmId("test1")
+
+    private val redis = RedisClient.create("redis://localhost:$REALM_REDIS_PORT")
+    private val authRedis = RedisClient.create("redis://localhost:$AUTH_REDIS_PORT")
     private val cryptoManager = CryptoManager()
+
+    private val authDao = RedisAuthDao(authRedis, cryptoManager)
+    private val authValidator = SessionAuthValidator(authDao, cryptoManager)
+
+    private val realmDao = RedisRealmDao(authRedis)
 
     private val configDao = RedisConfigDao(redis)
     private val configManager = ConfigManager(configDao)
 
-    private val authDao = RedisAuthDao(redis, cryptoManager)
-    private val authValidator = SessionAuthValidator(authDao, cryptoManager)
-
     private val characterDao = RedisCharacterDao(redis)
-    private val characterListManager = CharacterListManager(characterDao, configManager)
+    private val characterListManager = CharacterListManager(REALM_ID, characterDao, realmDao, configManager)
 
     init {
         // Setup world configuration
@@ -101,6 +110,8 @@ object GameServer {
                 guildId = 0,
                 flags = GameCharacter.Flags(ghost = true),
                 firstLogin = false))
+
+        realmDao.setUserCharacterCount(REALM_ID, rikUser.userId, characterDao.getCharacterCount(rikUser.userId))
     }
 
     @JvmStatic fun main(args: Array<String>) {

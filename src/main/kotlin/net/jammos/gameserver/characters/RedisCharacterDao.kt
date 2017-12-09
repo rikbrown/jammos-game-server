@@ -55,8 +55,8 @@ class RedisCharacterDao(redisClient: RedisClient): CharacterDao {
                 .toSet()
     }
 
-    override fun getCharacterCount(userId: UserId): Long {
-        return conn.scard(userCharactersKey(userId)).get()
+    override fun getCharacterCount(userId: UserId): Int {
+        return conn.scard(userCharactersKey(userId)).get().toInt()
     }
 
     override fun getCharacter(characterId: CharacterId): GameCharacter? {

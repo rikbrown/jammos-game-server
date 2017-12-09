@@ -7,12 +7,16 @@ import net.jammos.gameserver.characters.CharacterListManager.CharacterCreationFa
 import net.jammos.gameserver.config.ConfigManager
 import net.jammos.gameserver.zones.Zone
 import net.jammos.utils.auth.UserId
+import net.jammos.utils.realm.RealmDao
+import net.jammos.utils.realm.RealmId
 
 const private val MAX_NAME_LENGTH = 12 // max allowed by client
 const private val MIN_NAME_LENGTH = 2 // min allowed by client (todo: configurable?)
 
 class CharacterListManager(
+        private val realmId: RealmId,
         private val characterDao: CharacterDao,
+        private val realmDao: RealmDao,
         configManager: ConfigManager) {
     private val config = CharacterConfig(configManager)
 
@@ -38,21 +42,27 @@ class CharacterListManager(
             throw MultipleTeamsNotAllowed // PvP team violation
 
         // Create character
-        return characterDao.createCharacter(GameCharacter(
-                userId = userId,
-                name = normalisedName,
-                race = race,
-                characterClass = characterClass,
-                gender = gender,
-                skin = skin,
-                face = face,
-                hairStyle = hairStyle,
-                hairColour = hairColour,
-                facialHair = facialHair,
-                zone = Zone.NONE, // TODO
-                map = 0, // TODO
-                position = Position.ZERO, // TODO
-                firstLogin = true))
+        try {
+            return characterDao.createCharacter(GameCharacter(
+                    userId = userId,
+                    name = normalisedName,
+                    race = race,
+                    characterClass = characterClass,
+                    gender = gender,
+                    skin = skin,
+                    face = face,
+                    hairStyle = hairStyle,
+                    hairColour = hairColour,
+                    facialHair = facialHair,
+                    zone = Zone.NONE, // TODO
+                    map = 0, // TODO
+                    position = Position.ZERO, // TODO
+                    firstLogin = true))
+
+        } finally {
+            // Update the user character count
+            realmDao.setUserCharacterCount(realmId, userId, characterDao.getCharacterCount(userId))
+        }
     }
 
     fun deleteCharacter(userId: UserId, characterId: CharacterId) {
@@ -64,7 +74,13 @@ class CharacterListManager(
         // TODO: nope out if current player
         // TODO: nope if guild leader
         // TODO: logout player if online
-        characterDao.deleteCharacter(character)
+        try {
+            characterDao.deleteCharacter(character)
+
+        } finally {
+            // Update the user character count
+            realmDao.setUserCharacterCount(realmId, userId, characterDao.getCharacterCount(userId))
+        }
     }
 
     fun getCharacters(userId: UserId) = characterDao.listCharacters(userId)

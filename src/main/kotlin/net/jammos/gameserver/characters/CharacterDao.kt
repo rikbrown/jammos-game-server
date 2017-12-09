@@ -5,7 +5,7 @@ import net.jammos.utils.auth.UserId
 interface CharacterDao {
     fun createCharacter(character: GameCharacter, overwriteExisting: Boolean = false): GameCharacter
     fun listCharacters(userId: UserId): Set<GameCharacter>
-    fun getCharacterCount(userId: UserId): Long
+    fun getCharacterCount(userId: UserId): Int
     fun getCharacter(characterId: CharacterId): GameCharacter?
     fun getCharacter(name: String): GameCharacter?
     fun deleteCharacter(character: GameCharacter)
