@@ -23,7 +23,7 @@ interface ClientMessage {
                 ClientCommand.UPDATE_ACCOUNT_DATA to ClientUpdateAccountDataMessage))
 
         fun read(input: ByteBuf, crypto: MessageCrypto): ClientMessage {
-            // Read header
+            // Read header (6b)
             val header = Header.read(input, crypto)
 
             // Lookup handler

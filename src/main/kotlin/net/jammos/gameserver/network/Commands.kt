@@ -34,14 +34,23 @@ enum class ClientCommand(override val value: Short): WriteableByte {
 }
 
 enum class ServerCommand(override val value: Short): WriteableByte {
+    LOGIN_SETTIMESPEED(0x042),
+    TUTORIAL_FLAGS(0x0FD),
+    INITIALISE_FACTIONS(0x122),
+    ACTION_BUTTONS(0x129),
+    INITIAL_SPELLS(0x12A),
+    BIND_POINT_UPDATE(0x155),
     AUTH_CHALLENGE(0x1EC),
     AUTH_RESPONSE(0x1EE),
     PONG(0x1DD),
+    INIT_WORLD_STATES(0x2C2),
     CHAR_CREATE_RESULT(0x03A),
     CHAR_ENUM(0x03B),
     CHAR_DELETE_RESULT(0x03C),
-    LOGIN_VERIFY_WORLD(0x236),
-    ACCOUNT_DATA_TIMES(0x209);
+    ACCOUNT_DATA_TIMES(0x209),
+    SET_REST_START(0x21E),
+    LOGIN_VERIFY_WORLD(0x236);
+
 
     override fun toString() = "${super.toString()} (${value.toHexString(3)})"
 }

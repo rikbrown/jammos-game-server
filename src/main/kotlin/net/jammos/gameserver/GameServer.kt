@@ -152,7 +152,7 @@ object GameServer {
                                     CharacterListHandler(characterListManager),
                                     CharacterCreateHandler(characterListManager),
                                     CharacterDeleteHandler(characterListManager),
-                                    VerifyWorldHandler())
+                                    LoginHandler())
                         }
                     })
 
